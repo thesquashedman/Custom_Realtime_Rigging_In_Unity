@@ -18,7 +18,7 @@ public class MeshBoneLoader : MonoBehaviour
         public List<int> mVertexIndexes = new List<int>();
         public Color group_and_weights; //Color.x is the vertex group, Color.y is the weight
 
-        GameObject collider;
+        public GameObject collider;
     }
 
     //A list of all the grouped vertices
@@ -45,6 +45,11 @@ public class MeshBoneLoader : MonoBehaviour
                 temp.group_and_weights = new Color(0, 0, 0 ,0);
                 mGroupedVerticesList.Add(temp);
                 mVertexDictioary.Add(mMesh.vertices[i], temp);
+                GameObject newCollider = (GameObject)Instantiate(Resources.Load("Collider"));
+                
+                newCollider.transform.localPosition = transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[i]); //Currently only works with translations.
+                temp.collider = newCollider;
+                newCollider.transform.parent = transform;
             }
             else{
                 mVertexDictioary[mMesh.vertices[i]].mVertexIndexes.Add(i);
