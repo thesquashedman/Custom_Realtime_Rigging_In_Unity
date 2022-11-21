@@ -30,6 +30,7 @@ Shader "Unlit/Unlit"
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+                fixed4 theColor : COLOR0;
             };
             sampler2D _MainTex;
             float4 _MainTex_ST;
@@ -39,7 +40,7 @@ Shader "Unlit/Unlit"
             {
                 v2f o;
                 
-                
+                o.theColor = v.mColor;
                 float4x4 temp = MyXformMat[v.mColor.x];     //Get the matrix of the bone that should be applied. 
 
                 temp[0][3] *= v.mColor.y;                   //Multiplies the last row of the matrix by the weight. My theory is this would be equivalent to applying the weight to only the translation, but I don't think that's the case
@@ -55,7 +56,7 @@ Shader "Unlit/Unlit"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);         //Default fragment shader stuff
+                fixed4 col = i.theColor; //tex2D(_MainTex, i.uv);         //Default fragment shader stuff
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
@@ -64,3 +65,4 @@ Shader "Unlit/Unlit"
         }
     }
 }
+
