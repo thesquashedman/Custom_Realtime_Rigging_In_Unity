@@ -27,6 +27,10 @@ public class MeshBoneLoader : MonoBehaviour
     //Used for the grouping of the vertices, matches vertex Vector3 with which group they should be a part of.
     Dictionary<Vector3, GroupedVertices> mVertexDictioary = new Dictionary<Vector3, GroupedVertices>();
 
+    const int numberOfBones = 21;
+
+    Matrix4x4[] boneMatrixArray = new Matrix4x4[numberOfBones + 1]; //Important note: boneMatrixArray[0] should always be the identity matrix
+
     void Start()
     {
         
@@ -59,13 +63,19 @@ public class MeshBoneLoader : MonoBehaviour
         }
 
         //Here I am setting all the vertices of a vertex group so that a point is assigned to vertex group 1
-        mGroupedVerticesList[0].group_and_weights = new Color(1, 1f, 0, 0);
+        mGroupedVerticesList[0].group_and_weights = new Color(2, 1, 0, 0);
+        Debug.Log(mGroupedVerticesList[0].group_and_weights);
         for(int i = 0; i < mGroupedVerticesList[0].mVertexIndexes.Count; i++)
         {
             Debug.Log(mGroupedVerticesList[0].mVertexIndexes[i]);
-            mColors[mGroupedVerticesList[0].mVertexIndexes[i]] = new Color(1, 1, 0, 0);
+            mColors[mGroupedVerticesList[0].mVertexIndexes[i]] = new Color(2, 1, 0, 0);
         }
         mMesh.colors = mColors;     //Applies the vertex colors to the vertices
+        
+        for(int i = 0; i < boneMatrixArray.Length; i++)
+        {
+            boneMatrixArray[i] = Matrix4x4.identity; //Set the initial values of all the bones to the identity matrix.
+        }
         
         
     }
@@ -77,6 +87,7 @@ public class MeshBoneLoader : MonoBehaviour
             
             //I beleive I borrowed this from transform loader
 
+            /*
             Matrix4x4 m = Matrix4x4.identity;  // column major, column first ...
             Matrix4x4 T = Matrix4x4.identity;
             Matrix4x4 R = Matrix4x4.identity;
@@ -102,5 +113,12 @@ public class MeshBoneLoader : MonoBehaviour
             matrixArray[1] = mParent.localToWorldMatrix * T * boneTransform.transform.localToWorldMatrix * R * S * boneTransform.transform.localToWorldMatrix.inverse ; //Creates the matrix for bone 1. 
             
             mMaterial.SetMatrixArray("MyXformMat", matrixArray); //Loads the matrix for bone 1
-        }
+            */
+            mMaterial.SetMatrixArray("MyXformMat", boneMatrixArray);
+            
+    }
+    public void LoadBone(int boneNumber, Matrix4x4 boneMatrix)
+    {
+        boneMatrixArray[boneNumber] = boneMatrix;
+    }
 }

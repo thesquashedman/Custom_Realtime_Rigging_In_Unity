@@ -34,7 +34,7 @@ Shader "Unlit/Unlit"
             };
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4x4 MyXformMat[2];
+            float4x4 MyXformMat[22];
 
             v2f vert (appdata v)
             {

@@ -15,6 +15,7 @@ public class TheWorld : MonoBehaviour  {
     private void Update()
     {
         Matrix4x4 i = Matrix4x4.identity;
-        TheRoot.CompositeXform(ref i);
+        Matrix4x4 i2 = Matrix4x4.identity;
+        TheRoot.CompositeXform(ref i, ref i2);
     }
 }
