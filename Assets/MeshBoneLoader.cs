@@ -63,12 +63,12 @@ public class MeshBoneLoader : MonoBehaviour
         }
 
         //Here I am setting all the vertices of a vertex group so that a point is assigned to vertex group 1
-        mGroupedVerticesList[0].group_and_weights = new Color(2, 1, 0, 0);
-        Debug.Log(mGroupedVerticesList[0].group_and_weights);
+        mGroupedVerticesList[5].group_and_weights = new Color(2, 1, 0, 0);
+        Debug.Log(mGroupedVerticesList[5].group_and_weights);
         for(int i = 0; i < mGroupedVerticesList[0].mVertexIndexes.Count; i++)
         {
-            Debug.Log(mGroupedVerticesList[0].mVertexIndexes[i]);
-            mColors[mGroupedVerticesList[0].mVertexIndexes[i]] = new Color(2, 1, 0, 0);
+            Debug.Log(mGroupedVerticesList[5].mVertexIndexes[i]);
+            mColors[mGroupedVerticesList[5].mVertexIndexes[i]] = new Color(2, 1, 0, 0);
         }
         mMesh.colors = mColors;     //Applies the vertex colors to the vertices
         
@@ -77,8 +77,10 @@ public class MeshBoneLoader : MonoBehaviour
             boneMatrixArray[i] = Matrix4x4.identity; //Set the initial values of all the bones to the identity matrix.
         }
         
-        
+        //Important note: After assigning the vertices to bones, we will want to hide all the cube colliders that mark the points.
+        //We also ideally want to assign all the vertices at once, going from a rigging mode where we assign points to the rig to a manipulating mode where we manipulate the rig.
     }
+
 
     // Update is called once per frame
     void Update()
@@ -120,5 +122,6 @@ public class MeshBoneLoader : MonoBehaviour
     public void LoadBone(int boneNumber, Matrix4x4 boneMatrix)
     {
         boneMatrixArray[boneNumber] = boneMatrix;
+        
     }
 }
