@@ -62,11 +62,12 @@ public class SceneNode : MonoBehaviour {
         S[0] = (transform.localScale - oScale + Vector3.one).x;
         S[5] = (transform.localScale - oScale + Vector3.one).y;
         S[10] = (transform.localScale - oScale + Vector3.one).z;
-        TD[12] =  (transform.localPosition - oPosition).x;
-        TD[13] = (transform.localPosition - oPosition).y;
-        TD[14] = (transform.localPosition - oPosition).z;
+        TD[12] =  (transform.localPosition.x - oPosition.x);
+        TD[13] = (transform.localPosition.y - oPosition.y);
+        TD[14] = (transform.localPosition.z - oPosition.z);
 
         mCombinedParentXformFromOrigin = parentXFormFromOrigin * TD * T * R * S * T.inverse;
+        Debug.Log(mCombinedParentXformFromOrigin.ToString());
 
         // propagate to all children
         foreach (Transform child in transform)
