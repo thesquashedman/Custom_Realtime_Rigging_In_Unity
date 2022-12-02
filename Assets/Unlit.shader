@@ -40,7 +40,6 @@ Shader "Unlit/Unlit"
             {
                 v2f o;
                 
-                o.theColor = v.mColor;
                 float4x4 temp = MyXformMat[v.mColor.x];     //Get the matrix of the bone that should be applied. 
 
                 temp[0][3] *= v.mColor.y;                   //Multiplies the last row of the matrix by the weight. My theory is this would be equivalent to applying the weight to only the translation, but I don't think that's the case
@@ -51,6 +50,16 @@ Shader "Unlit/Unlit"
                 o.vertex = mul(UNITY_MATRIX_VP, o.vertex);  //View and projection matrix multiplication
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);       //Default tex and fog stuff
                 UNITY_TRANSFER_FOG(o,o.vertex);
+
+                //Hue shift gotten from comments on https://gist.github.com/mairod/a75e7b44f68110e1576d77419d608786
+                float hue = v.mColor.x * (2 * 3.1415 / 22);
+                float3 newColor = float3(1, 0 , 0);
+                float3 k = float3(0.57735, 0.57735, 0.57735);
+                float cosAngle = cos(hue);
+                newColor = (newColor * cosAngle + cross(k, newColor) * sin(hue) + k * dot(k, newColor) * (1.0 - cosAngle));
+                o.theColor.x = newColor.x * v.mColor.y;
+                o.theColor.y = newColor.y * v.mColor.y;
+                o.theColor.z = newColor.z * v.mColor.y;
                 return o;
             }
 

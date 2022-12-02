@@ -58,17 +58,17 @@ public class MeshBoneLoader : MonoBehaviour
             else{
                 mVertexDictioary[mMesh.vertices[i]].mVertexIndexes.Add(i);
             }
-            mColors[i] = new Color(0, 1, 0 ,0);
+            mColors[i] = new Color(0, 0, 0 ,0);
             
         }
 
         //Here I am setting all the vertices of a vertex group so that a point is assigned to vertex group 1
-        mGroupedVerticesList[5].group_and_weights = new Color(3, 1, 0, 0);
+        mGroupedVerticesList[5].group_and_weights = new Color(19, 1, 0, 0);
         Debug.Log(mGroupedVerticesList[5].group_and_weights);
         for(int i = 0; i < mGroupedVerticesList[0].mVertexIndexes.Count; i++)
         {
             Debug.Log(mGroupedVerticesList[5].mVertexIndexes[i]);
-            mColors[mGroupedVerticesList[5].mVertexIndexes[i]] = new Color(3, 1, 0, 0);
+            mColors[mGroupedVerticesList[5].mVertexIndexes[i]] = new Color(4, 0.25f, 0, 0);
         }
         mMesh.colors = mColors;     //Applies the vertex colors to the vertices
         
