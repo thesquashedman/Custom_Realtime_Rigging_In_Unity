@@ -18,7 +18,10 @@ public class SceneNode : MonoBehaviour {
     public Vector3 oScale;
 
     public MeshBoneLoader myMesh;
-    public int boneNumber = 0;
+    public int boneNumber;
+
+    bool firstCall = true;
+    Vector3 WorldPositionUponAssignment;
 
 	// Use this for initialization
 	protected void Start () {
@@ -37,7 +40,7 @@ public class SceneNode : MonoBehaviour {
     }
 
     // This must be called _BEFORE_ each draw!! 
-    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin, int previousBoneNumber)
+    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin)
     {
         Matrix4x4 orgT = Matrix4x4.Translate(NodeOrigin);
         Matrix4x4 trs = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
@@ -54,10 +57,14 @@ public class SceneNode : MonoBehaviour {
 
         mCombinedParentXform = parentXform * orgT * trs;
 
-        
-        T[12] =  mCombinedParentXform[12];
-        T[13] = mCombinedParentXform[13];
-        T[14] = mCombinedParentXform[14];
+        if(firstCall)
+        {
+            WorldPositionUponAssignment = new Vector3(mCombinedParentXform[12], mCombinedParentXform[13], mCombinedParentXform[14]);
+            firstCall = false;
+        }
+        T[12] =  WorldPositionUponAssignment.x;
+        T[13] = WorldPositionUponAssignment.y;
+        T[14] = WorldPositionUponAssignment.z;
         R = Matrix4x4.Rotate(transform.localRotation * Quaternion.Inverse(oRotation));
         S[0] = (transform.localScale - oScale + Vector3.one).x;
         S[5] = (transform.localScale - oScale + Vector3.one).y;
@@ -67,7 +74,13 @@ public class SceneNode : MonoBehaviour {
         TD[14] = (transform.localPosition.z - oPosition.z);
 
         mCombinedParentXformFromOrigin = parentXFormFromOrigin * TD * T * R * S * T.inverse;
-        //Debug.Log(mCombinedParentXformFromOrigin.ToString());
+        if(boneNumber == 1)
+        {
+            //Debug.Log(mCombinedParentXformFromOrigin.ToString());
+            Debug.Log(WorldPositionUponAssignment);
+            Debug.Log(T);
+        }
+        
 
         // propagate to all children
         foreach (Transform child in transform)
@@ -75,7 +88,7 @@ public class SceneNode : MonoBehaviour {
             SceneNode cn = child.GetComponent<SceneNode>();
             if (cn != null)
             {
-                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin, boneNumber);
+                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin);
             }
         }
         
