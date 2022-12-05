@@ -5,15 +5,15 @@ using UnityEngine;
 public class NodePrimitiveLine : MonoBehaviour
 {
     public Color MyColor = new Color(0.1f, 0.1f, 0.2f, 1.0f);
-    [SerializeField] GameObject colliderObject;
+    [SerializeField] GameObject newCollider;
 
-    GameObject newCollider;
+    //GameObject newCollider;
     
     
 
 	// Use this for initialization
 	void Start () {
-        newCollider = Instantiate(colliderObject);
+        //newCollider = Instantiate(colliderObject);
     }
 
     void Update()
@@ -56,6 +56,10 @@ public class NodePrimitiveLine : MonoBehaviour
             theScale.z = 4;
             newCollider.transform.localScale = theScale;
             newCollider.GetComponent<CheckInsideTheColider>().boneNumber = boneNumber;
+        }
+        else
+        {
+            Debug.Log("missing collider");
         }
     }
     //Gotten from here https://forum.unity.com/threads/how-to-assign-matrix4x4-to-transform.121966/
