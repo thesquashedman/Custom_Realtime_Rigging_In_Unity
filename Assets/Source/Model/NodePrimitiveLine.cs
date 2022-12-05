@@ -52,8 +52,8 @@ public class NodePrimitiveLine : MonoBehaviour
             newCollider.transform.position = ExtractPosition(m);
             newCollider.transform.rotation = ExtractRotation(m);
             Vector3 theScale = ExtractScale(m);
-            theScale.x = 3;
-            theScale.z = 3;
+            theScale.x = 4;
+            theScale.z = 4;
             newCollider.transform.localScale = theScale;
             newCollider.GetComponent<CheckInsideTheColider>().boneNumber = boneNumber;
         }

@@ -16,6 +16,6 @@ public class TheWorld : MonoBehaviour  {
     {
         Matrix4x4 i = Matrix4x4.identity;
         Matrix4x4 i2 = Matrix4x4.identity;
-        TheRoot.CompositeXform(ref i, ref i2);
+        TheRoot.CompositeXform(ref i, ref i2, 0);
     }
 }

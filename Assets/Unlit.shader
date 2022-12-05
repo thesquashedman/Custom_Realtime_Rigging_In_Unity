@@ -6,8 +6,11 @@ Shader "Unlit/Unlit"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" }
         LOD 100
+
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -60,6 +63,7 @@ Shader "Unlit/Unlit"
                 o.theColor.x = newColor.x * v.mColor.y;
                 o.theColor.y = newColor.y * v.mColor.y;
                 o.theColor.z = newColor.z * v.mColor.y;
+                o.theColor.w = 0.5;
                 return o;
             }
 
