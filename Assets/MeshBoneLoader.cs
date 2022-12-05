@@ -23,6 +23,7 @@ public class MeshBoneLoader : MonoBehaviour
         public Color group_and_weights; //Color.x is the vertex group, Color.y is the weight
 
         public GameObject collider;
+        public float distanceOverHeight = float.MaxValue; //For how far along it is along the bone, used for determining which bone to use when there is bone overlap.
     }
 
     //A list of all the grouped vertices
@@ -158,14 +159,21 @@ public class MeshBoneLoader : MonoBehaviour
                     //    CheckColIns(mGroupedVerticesList[v].collider.GetComponent<Collider>()))
                     //{
                     //Debug.Log("Got Inside 2");
-                int boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider);
+                float distanceOverHeight = 0;
+                int boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider, ref distanceOverHeight);
                 if (boneNumber != 0)
                 {
                     //Debug.Log("INSIDE");
-                    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                    if(mGroupedVerticesList[v].group_and_weights == new Color(0,0,0,0) || mGroupedVerticesList[v].distanceOverHeight > distanceOverHeight)
                     {
-                        mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                        mGroupedVerticesList[v].group_and_weights = new Color(boneNumber, 1.0f, 0, 0);
+                        mGroupedVerticesList[v].distanceOverHeight = distanceOverHeight;
+                        for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                        {
+                            mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                        }
                     }
+                    
                 }
                 
 

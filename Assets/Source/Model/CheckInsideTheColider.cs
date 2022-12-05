@@ -28,9 +28,10 @@ public class CheckInsideTheColider : MonoBehaviour
         return false;
     }
 
-    public int Check(GameObject collider)
+    public int Check(GameObject collider, ref float distanceOverHeight)
     {
         Debug.Log(ObjectsWithinCollider.Count);
+        distanceOverHeight = (collider.transform.position - this.transform.position).magnitude / 2;
         if(ObjectsWithinCollider.Contains(collider))
         {
             return boneNumber;
