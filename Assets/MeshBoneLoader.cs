@@ -12,6 +12,10 @@ public class MeshBoneLoader : MonoBehaviour
 
     public Transform mParent;       //Parent transform, for testing how this would work with a parent
 
+    [SerializeField] GameObject[] boneSystem;
+
+    [SerializeField] GameObject colliderObject;
+
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
     class GroupedVertices{
@@ -49,8 +53,9 @@ public class MeshBoneLoader : MonoBehaviour
                 temp.group_and_weights = new Color(0, 0, 0 ,0);
                 mGroupedVerticesList.Add(temp);
                 mVertexDictioary.Add(mMesh.vertices[i], temp);
-                GameObject newCollider = (GameObject)Instantiate(Resources.Load("Collider"));
-                
+                //GameObject newCollider = (GameObject)Instantiate(Resources.Load("Collider"));
+                GameObject newCollider = Instantiate(colliderObject);
+
                 newCollider.transform.localPosition = transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[i]); //Currently only works with translations.
                 temp.collider = newCollider;
                 newCollider.transform.parent = transform;
@@ -64,15 +69,48 @@ public class MeshBoneLoader : MonoBehaviour
 
         //Here I am setting all the vertices of a vertex group so that a point is assigned to vertex group 1
         mGroupedVerticesList[5].group_and_weights = new Color(19, 1, 0, 0);
-        Debug.Log(mGroupedVerticesList[5].group_and_weights);
-        for(int i = 0; i < mGroupedVerticesList[0].mVertexIndexes.Count; i++)
+        Debug.Log(mGroupedVerticesList[0].mVertexIndexes.Count);
+
+
+        for (int v = 0; v < mGroupedVerticesList.Count; v++)
         {
-            Debug.Log(mGroupedVerticesList[5].mVertexIndexes[i]);
-            mColors[mGroupedVerticesList[5].mVertexIndexes[i]] = new Color(4, 0.25f, 0, 0);
+            for (int b = 0; b < 2; b++)
+            {
+
+
+                    //Debug.Log(mGroupedVerticesList[v].mVertexIndexes[i]);
+
+                    Debug.Log("Got Inside 1");
+
+
+
+                    // Vector3 closest = boneSystem[b].GetComponent<Collider>().
+                    //    ClosestPoint(mGroupedVerticesList[v].collider.transform.position);
+
+                    //Debug.Log(mGroupedVerticesList[v].collider.transform.position);
+                    //Debug.Log("CLOSESTPOINT" + closest);
+                    //if (boneSystem[b].GetComponent<CheckInsideTheColider>().
+                    //    CheckColIns(mGroupedVerticesList[v].collider.GetComponent<Collider>()))
+                    //{
+                    Debug.Log("Got Inside 2");
+
+                if (boneSystem[b].GetComponent<CheckInsideTheColider>().
+                    Check(mGroupedVerticesList[v].collider.transform.position))
+                {
+                    Debug.Log("INSIDE");
+                    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                    {
+                        mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(b + 4, 1.0f, 0, 0);
+                    }
+                }
+                
+
+                
+            }
+            mMesh.colors = mColors;     //Applies the vertex colors to the vertices
         }
-        mMesh.colors = mColors;     //Applies the vertex colors to the vertices
-        
-        for(int i = 0; i < boneMatrixArray.Length; i++)
+
+        for (int i = 0; i < boneMatrixArray.Length; i++)
         {
             boneMatrixArray[i] = Matrix4x4.identity; //Set the initial values of all the bones to the identity matrix.
         }
