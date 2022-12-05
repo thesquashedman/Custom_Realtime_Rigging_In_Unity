@@ -20,7 +20,7 @@ public class NodePrimitiveCamera : NodePrimitive
     {
         
     }
-    public override void LoadShaderMatrix(ref Matrix4x4 nodeMatrix)
+    public override void LoadShaderMatrix(ref Matrix4x4 nodeMatrix, int boneNumber)
     {
         Matrix4x4 p = Matrix4x4.TRS(Pivot, Quaternion.identity, Vector3.one);
         Matrix4x4 invp = Matrix4x4.TRS(-Pivot, Quaternion.identity, Vector3.one);

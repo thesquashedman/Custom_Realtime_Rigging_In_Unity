@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CheckInsideTheColider : MonoBehaviour
 {
-
+    public List<GameObject> ObjectsWithinCollider = new List<GameObject>();
+    public int boneNumber = 0;
     void Update()
     {
         //Collider[] hitColidliders = Physics.OverlapSphere(transform.position, 0f);
@@ -27,15 +28,22 @@ public class CheckInsideTheColider : MonoBehaviour
         return false;
     }
 
-    public bool Check(Vector3 point)
+    public int Check(GameObject collider)
     {
-        Debug.Log((this.transform.position - point).magnitude);
+        Debug.Log(ObjectsWithinCollider.Count);
+        if(ObjectsWithinCollider.Contains(collider))
+        {
+            return boneNumber;
+        }
+        return 0;
 
+        /*
         if ((this.transform.position - point).magnitude < 1)
         {
             return true;
         }
         return false;
+        */
     }
 
     public bool IsInside(Vector3 point)
@@ -44,5 +52,29 @@ public class CheckInsideTheColider : MonoBehaviour
         Vector3 closest = this.GetComponent<Collider>().ClosestPoint(point);
         // Because closest=point if point is inside - not clear from docs I feel
         return closest == point;
+    }
+    //Gotten From https://answers.unity.com/questions/1875398/check-for-objects-inside-a-collider.html
+    private void OnTriggerEnter(Collider other) {
+        //Debug.Log(other.gameObject.name);
+        if(other.gameObject.name == "ColiderObject(Clone)")
+        {
+            //Debug.Log("moo");
+            if(!ObjectsWithinCollider.Contains(other.gameObject))
+            {
+                Debug.Log("added");
+                ObjectsWithinCollider.Add(other.gameObject);
+            }
+        }
+    }
+    private void OnTriggerExit(Collider other) {
+
+        if(other.gameObject.name == "ColiderObject(Clone)")
+        {
+            if(ObjectsWithinCollider.Contains(other.gameObject))
+            {
+                Debug.Log("removing");
+                ObjectsWithinCollider.Remove(other.gameObject);
+            }
+        }
     }
 }

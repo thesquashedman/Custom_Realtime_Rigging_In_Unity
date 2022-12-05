@@ -18,7 +18,7 @@ public class SceneNode : MonoBehaviour {
     public Vector3 oScale;
 
     public MeshBoneLoader myMesh;
-    public int boneNumber;
+    public int boneNumber = 0;
 
 	// Use this for initialization
 	protected void Start () {
@@ -37,7 +37,7 @@ public class SceneNode : MonoBehaviour {
     }
 
     // This must be called _BEFORE_ each draw!! 
-    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin)
+    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin, int previousBoneNumber)
     {
         Matrix4x4 orgT = Matrix4x4.Translate(NodeOrigin);
         Matrix4x4 trs = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
@@ -75,22 +75,22 @@ public class SceneNode : MonoBehaviour {
             SceneNode cn = child.GetComponent<SceneNode>();
             if (cn != null)
             {
-                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin);
+                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin, boneNumber);
             }
         }
         
         // disenminate to primitives
         foreach (NodePrimitive p in PrimitiveList)
         {
-            p.LoadShaderMatrix(ref mCombinedParentXform);
+            p.LoadShaderMatrix(ref mCombinedParentXform, boneNumber);
         }
         foreach (NodePrimitiveLine p in LinePrimitiveList)
         {
-            p.LoadShaderMatrix(ref parentXform, ref mCombinedParentXform);
+            p.LoadShaderMatrix(ref parentXform, ref mCombinedParentXform, boneNumber);
         }
         foreach (NodePrimitive p in specialPrimitive)
         {
-            p.LoadShaderMatrix(ref mCombinedParentXform);
+            p.LoadShaderMatrix(ref mCombinedParentXform, boneNumber);
         }
         
         myMesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);

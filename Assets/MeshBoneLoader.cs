@@ -66,54 +66,21 @@ public class MeshBoneLoader : MonoBehaviour
             mColors[i] = new Color(0, 0, 0 ,0);
             
         }
+        mMesh.colors = mColors; 
 
         //Here I am setting all the vertices of a vertex group so that a point is assigned to vertex group 1
-        mGroupedVerticesList[5].group_and_weights = new Color(19, 1, 0, 0);
-        Debug.Log(mGroupedVerticesList[0].mVertexIndexes.Count);
+        //mGroupedVerticesList[5].group_and_weights = new Color(19, 1, 0, 0);
+        //Debug.Log(mGroupedVerticesList[0].mVertexIndexes.Count);
+        
 
-
-        for (int v = 0; v < mGroupedVerticesList.Count; v++)
-        {
-            for (int b = 0; b < 2; b++)
-            {
-
-
-                    //Debug.Log(mGroupedVerticesList[v].mVertexIndexes[i]);
-
-                    Debug.Log("Got Inside 1");
-
-
-
-                    // Vector3 closest = boneSystem[b].GetComponent<Collider>().
-                    //    ClosestPoint(mGroupedVerticesList[v].collider.transform.position);
-
-                    //Debug.Log(mGroupedVerticesList[v].collider.transform.position);
-                    //Debug.Log("CLOSESTPOINT" + closest);
-                    //if (boneSystem[b].GetComponent<CheckInsideTheColider>().
-                    //    CheckColIns(mGroupedVerticesList[v].collider.GetComponent<Collider>()))
-                    //{
-                    Debug.Log("Got Inside 2");
-
-                if (boneSystem[b].GetComponent<CheckInsideTheColider>().
-                    Check(mGroupedVerticesList[v].collider.transform.position))
-                {
-                    Debug.Log("INSIDE");
-                    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
-                    {
-                        mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(b + 4, 1.0f, 0, 0);
-                    }
-                }
-                
-
-                
-            }
-            mMesh.colors = mColors;     //Applies the vertex colors to the vertices
-        }
+        
 
         for (int i = 0; i < boneMatrixArray.Length; i++)
         {
             boneMatrixArray[i] = Matrix4x4.identity; //Set the initial values of all the bones to the identity matrix.
         }
+        //AutoAssignBones();
+        StartCoroutine(AutoAssignBones());
         
         //Important note: After assigning the vertices to bones, we will want to hide all the cube colliders that mark the points.
         //We also ideally want to assign all the vertices at once, going from a rigging mode where we assign points to the rig to a manipulating mode where we manipulate the rig.
@@ -162,4 +129,52 @@ public class MeshBoneLoader : MonoBehaviour
         boneMatrixArray[boneNumber] = boneMatrix;
         
     }
+    IEnumerator AutoAssignBones()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Mesh mMesh = GetComponent<MeshFilter>().mesh;
+        
+        Color[] mColors = new Color[mMesh.vertices.Length];
+        GameObject[] boneColliders = GameObject.FindGameObjectsWithTag("BoneCollider");
+        Debug.Log(boneColliders.Length);
+        for (int v = 0; v < mGroupedVerticesList.Count; v++)
+        {
+            foreach (GameObject b in boneColliders)
+            {
+
+
+                    //Debug.Log(mGroupedVerticesList[v].mVertexIndexes[i]);
+
+                    //Debug.Log("Got Inside 1");
+
+
+
+                    // Vector3 closest = boneSystem[b].GetComponent<Collider>().
+                    //    ClosestPoint(mGroupedVerticesList[v].collider.transform.position);
+
+                    //Debug.Log(mGroupedVerticesList[v].collider.transform.position);
+                    //Debug.Log("CLOSESTPOINT" + closest);
+                    //if (boneSystem[b].GetComponent<CheckInsideTheColider>().
+                    //    CheckColIns(mGroupedVerticesList[v].collider.GetComponent<Collider>()))
+                    //{
+                    //Debug.Log("Got Inside 2");
+                int boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider);
+                if (boneNumber != 0)
+                {
+                    //Debug.Log("INSIDE");
+                    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                    {
+                        mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                    }
+                }
+                
+
+                
+            }
+                
+        }
+         mMesh.colors = mColors;
+
+    }
 }
+    
