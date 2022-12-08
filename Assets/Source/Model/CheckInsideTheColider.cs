@@ -30,7 +30,7 @@ public class CheckInsideTheColider : MonoBehaviour
 
     public int Check(GameObject collider, ref float distanceOverHeight)
     {
-        Debug.Log(ObjectsWithinCollider.Count);
+        //Debug.Log(ObjectsWithinCollider.Count);
         distanceOverHeight = (collider.transform.position - this.transform.position).magnitude / 2;
         if(ObjectsWithinCollider.Contains(collider))
         {
@@ -45,6 +45,16 @@ public class CheckInsideTheColider : MonoBehaviour
         }
         return false;
         */
+    }
+    public int CheckNoCollider(Vector3 position, ref float distanceOverHeight)
+    {
+        
+        distanceOverHeight = (position - this.transform.position).magnitude / 2;
+        if(GetComponent<Collider>().bounds.Contains(position))
+        {
+            return boneNumber;
+        }
+        return 0;
     }
 
     public bool IsInside(Vector3 point)
@@ -62,7 +72,7 @@ public class CheckInsideTheColider : MonoBehaviour
             //Debug.Log("moo");
             if(!ObjectsWithinCollider.Contains(other.gameObject))
             {
-                Debug.Log("added");
+                //Debug.Log("added");
                 ObjectsWithinCollider.Add(other.gameObject);
             }
         }
@@ -73,7 +83,7 @@ public class CheckInsideTheColider : MonoBehaviour
         {
             if(ObjectsWithinCollider.Contains(other.gameObject))
             {
-                Debug.Log("removing");
+                //Debug.Log("removing");
                 ObjectsWithinCollider.Remove(other.gameObject);
             }
         }

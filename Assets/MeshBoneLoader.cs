@@ -6,7 +6,8 @@ public class MeshBoneLoader : MonoBehaviour
 {
     // Start is called before the first frame update
     public Transform boneTransform;          //Transorm the vertices should get parented to
-    public Material mMaterial;      //Material with the shader
+
+    [SerializeField] Material mMaterial;      //Material with the shader
 
     public Point mP;                //Just contains the original transform of the bone.
 
@@ -15,6 +16,12 @@ public class MeshBoneLoader : MonoBehaviour
     [SerializeField] GameObject[] boneSystem;
 
     [SerializeField] GameObject colliderObject;
+
+    [SerializeField]bool useColliders;
+
+    Mesh mMesh;
+
+    Material originalMaterial;
 
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
@@ -38,7 +45,8 @@ public class MeshBoneLoader : MonoBehaviour
 
     void Start()
     {
-        
+        mMaterial = new Material(mMaterial);
+        GetComponent<Renderer>().material = mMaterial;
         Mesh mMesh = GetComponent<MeshFilter>().mesh;
         
         Color[] mColors = new Color[mMesh.vertices.Length];     //Creates an array for applying the vertex colors 
@@ -49,17 +57,23 @@ public class MeshBoneLoader : MonoBehaviour
         {
             if(!mVertexDictioary.ContainsKey(mMesh.vertices[i]))
             {
+                //Debug.Log(i);
                 GroupedVertices temp = new GroupedVertices();
                 temp.mVertexIndexes.Add(i);
                 temp.group_and_weights = new Color(0, 0, 0 ,0);
                 mGroupedVerticesList.Add(temp);
                 mVertexDictioary.Add(mMesh.vertices[i], temp);
                 //GameObject newCollider = (GameObject)Instantiate(Resources.Load("Collider"));
-                GameObject newCollider = Instantiate(colliderObject);
+                
+                if(useColliders)
+                {
+                    GameObject newCollider = Instantiate(colliderObject);
 
-                newCollider.transform.localPosition = transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[i]); //Currently only works with translations.
-                temp.collider = newCollider;
-                newCollider.transform.parent = transform;
+                    newCollider.transform.localPosition = transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[i]); //Currently only works with translations.
+                    temp.collider = newCollider;
+                    newCollider.transform.parent = transform;
+                }
+                
             }
             else{
                 mVertexDictioary[mMesh.vertices[i]].mVertexIndexes.Add(i);
@@ -91,6 +105,18 @@ public class MeshBoneLoader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.X))
+        {
+            originalMaterial = mMaterial;
+            GetComponent<Renderer>().material.shader = Shader.Find("Unlit/BoneShaderColored");
+            mMaterial = GetComponent<Renderer>().material;
+            
+        }
+        if(Input.GetKeyUp(KeyCode.X))
+        {
+             GetComponent<Renderer>().material = originalMaterial;
+             mMaterial = originalMaterial;
+        }
            //Mesh mMesh = GetComponent<MeshFilter>().mesh;
             
             //I beleive I borrowed this from transform loader
@@ -137,7 +163,7 @@ public class MeshBoneLoader : MonoBehaviour
         
         Color[] mColors = new Color[mMesh.vertices.Length];
         GameObject[] boneColliders = GameObject.FindGameObjectsWithTag("BoneCollider");
-        Debug.Log(boneColliders.Length);
+        //Debug.Log(boneColliders.Length);
         for (int v = 0; v < mGroupedVerticesList.Count; v++)
         {
             foreach (GameObject b in boneColliders)
@@ -160,21 +186,30 @@ public class MeshBoneLoader : MonoBehaviour
                     //{
                     //Debug.Log("Got Inside 2");
                 float distanceOverHeight = 0;
-                int boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider, ref distanceOverHeight);
-                if (boneNumber != 0)
+                int boneNumber;
+                if(useColliders)
                 {
-                    //Debug.Log("INSIDE");
-                    if(mGroupedVerticesList[v].group_and_weights == new Color(0,0,0,0) || mGroupedVerticesList[v].distanceOverHeight > distanceOverHeight)
-                    {
-                        mGroupedVerticesList[v].group_and_weights = new Color(boneNumber, 1.0f, 0, 0);
-                        mGroupedVerticesList[v].distanceOverHeight = distanceOverHeight;
-                        for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
-                        {
-                            mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
-                        }
-                    }
+                    boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider, ref distanceOverHeight);
                     
                 }
+                else
+                {
+                    boneNumber = b.GetComponent<CheckInsideTheColider>().CheckNoCollider(transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[mGroupedVerticesList[v].mVertexIndexes[0]]), ref distanceOverHeight);
+                }
+                if (boneNumber != 0)
+                    {
+                        //Debug.Log("INSIDE");
+                        if(mGroupedVerticesList[v].group_and_weights == new Color(0,0,0,0) || mGroupedVerticesList[v].distanceOverHeight > distanceOverHeight)
+                        {
+                            mGroupedVerticesList[v].group_and_weights = new Color(boneNumber, 1.0f, 0, 0);
+                            mGroupedVerticesList[v].distanceOverHeight = distanceOverHeight;
+                            for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                            {
+                                mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                            }
+                        }
+                        
+                    }
                 
 
                 
