@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MyColor: {r: 0.1, g: 0.1, b: 0.2, a: 1}
+  boneColliderRadius: 6
   newCollider: {fileID: 4212561953142827425}
 --- !u!1 &8281129045021955023
 GameObject:

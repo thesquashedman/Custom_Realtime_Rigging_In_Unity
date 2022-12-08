@@ -15,7 +15,7 @@ public class DisableFrustrumCulling : MonoBehaviour
 
     void OnPreCull()
     {
-        Debug.Log("fixing culling?");
+        //Debug.Log("fixing culling?");
         cam.cullingMatrix = Matrix4x4.Ortho(-99999, 99999, -99999, 99999, 0.001f, 99999) * 
                             Matrix4x4.Translate(Vector3.forward * -99999 / 2f) * 
                             cam.worldToCameraMatrix;

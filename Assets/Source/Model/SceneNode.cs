@@ -77,9 +77,10 @@ public class SceneNode : MonoBehaviour {
         TD[14] = (transform.localPosition.z - oPosition.z);
 
         mCombinedParentXformFromOrigin = parentXFormFromOrigin * TD * T * R * S * T.inverse;
-        if(boneNumber == 1)
+        if(boneNumber == 20)
         {
             //Debug.Log(mCombinedParentXformFromOrigin.ToString());
+            //Debug.Log(WorldPositionUponAssignment.ToString());
             //Debug.Log(WorldPositionUponAssignment);
             //Debug.Log(T);
         }

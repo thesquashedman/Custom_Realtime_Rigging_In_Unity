@@ -5,6 +5,7 @@ using UnityEngine;
 public class NodePrimitiveLine : MonoBehaviour
 {
     public Color MyColor = new Color(0.1f, 0.1f, 0.2f, 1.0f);
+    [SerializeField] float boneColliderRadius;
     [SerializeField] GameObject newCollider;
 
     //GameObject newCollider;
@@ -52,8 +53,8 @@ public class NodePrimitiveLine : MonoBehaviour
             newCollider.transform.position = ExtractPosition(m);
             newCollider.transform.rotation = ExtractRotation(m);
             Vector3 theScale = ExtractScale(m);
-            theScale.x = 6;
-            theScale.z = 6;
+            theScale.x = boneColliderRadius;
+            theScale.z = boneColliderRadius;
             newCollider.transform.localScale = theScale;
             newCollider.GetComponent<CheckInsideTheColider>().boneNumber = boneNumber;
         }

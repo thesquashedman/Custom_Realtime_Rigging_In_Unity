@@ -39,7 +39,7 @@ public class MeshBoneLoader : MonoBehaviour
     //Used for the grouping of the vertices, matches vertex Vector3 with which group they should be a part of.
     Dictionary<Vector3, GroupedVertices> mVertexDictioary = new Dictionary<Vector3, GroupedVertices>();
 
-    const int numberOfBones = 21;
+    const int numberOfBones = 22;
 
     Matrix4x4[] boneMatrixArray = new Matrix4x4[numberOfBones + 1]; //Important note: boneMatrixArray[0] should always be the identity matrix
 
@@ -153,6 +153,10 @@ public class MeshBoneLoader : MonoBehaviour
     }
     public void LoadBone(int boneNumber, Matrix4x4 boneMatrix)
     {
+        if(boneNumber == 20)
+        {
+            //Debug.Log(boneMatrix);
+        }
         boneMatrixArray[boneNumber] = boneMatrix;
         
     }

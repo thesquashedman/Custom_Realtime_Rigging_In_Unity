@@ -32,7 +32,7 @@ Shader "Custom/BoneShaderSurface"
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
-        float4x4 MyXformMat[22];
+        float4x4 MyXformMat[23];
         
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
