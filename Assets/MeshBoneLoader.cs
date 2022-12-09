@@ -23,6 +23,8 @@ public class MeshBoneLoader : MonoBehaviour
 
     Material originalMaterial;
 
+    [SerializeField]List<int> boneIgnore;
+
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
     class GroupedVertices{
@@ -202,18 +204,25 @@ public class MeshBoneLoader : MonoBehaviour
                 }
                 if (boneNumber != 0)
                     {
-                        //Debug.Log("INSIDE");
-                        if(mGroupedVerticesList[v].group_and_weights == new Color(0,0,0,0) || mGroupedVerticesList[v].distanceOverHeight > distanceOverHeight)
+                        if(!boneIgnore.Contains(boneNumber))
                         {
-                            mGroupedVerticesList[v].group_and_weights = new Color(boneNumber, 1.0f, 0, 0);
-                            mGroupedVerticesList[v].distanceOverHeight = distanceOverHeight;
-                            for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+
+                        
+                            //Debug.Log("INSIDE");
+                            if(mGroupedVerticesList[v].group_and_weights == new Color(0,0,0,0) || mGroupedVerticesList[v].distanceOverHeight > distanceOverHeight)
                             {
-                                mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                                mGroupedVerticesList[v].group_and_weights = new Color(boneNumber, 1.0f, 0, 0);
+                                mGroupedVerticesList[v].distanceOverHeight = distanceOverHeight;
+                                for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+                                {
+                                    mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                                }
                             }
                         }
                         
+                        
                     }
+                    
                 
 
                 
