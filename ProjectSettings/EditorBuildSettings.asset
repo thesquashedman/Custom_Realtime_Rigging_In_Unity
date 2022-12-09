@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/KnightModelTest.unity
+    guid: 227eb4040bc72c149b07134023c409f8
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 6bc25215cfbe59e449411b380f4e3ab9, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: fb2d9676e3a5fac4ea8981645dd15c6f, type: 2}

@@ -9,9 +9,14 @@ public class VRHeadsetTrack : MonoBehaviour
     public Transform rootBone;
 
     bool ready = false;
+
+    float speed = 20;
+
+    float angleSpeed = 120;
     void Start()
     {
         StartCoroutine(IsReady());
+        
     }
 
     // Update is called once per frame
@@ -23,6 +28,28 @@ public class VRHeadsetTrack : MonoBehaviour
         {
             headBone.localRotation = this.transform.localRotation;
             //headBone.localRotation = Quaternion.Euler(Vector3.Scale(this.transform.localEulerAngles, new Vector3(1, -1, -1)));
+            var rightHandedControllers = new List<UnityEngine.XR.InputDevice>();
+            var desiredCharacteristics = UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Right | UnityEngine.XR.InputDeviceCharacteristics.Controller;
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, rightHandedControllers);
+            foreach (var device in rightHandedControllers)
+            {
+                Vector2 direction;
+                if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out direction))
+                {
+                    rootBone.transform.localPosition +=  rootBone.forward * direction.y * speed * Time.deltaTime + rootBone.right * direction.x * speed * Time.deltaTime;
+                }
+            }
+            var leftHandedControllers = new List<UnityEngine.XR.InputDevice>();
+            desiredCharacteristics = UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Left | UnityEngine.XR.InputDeviceCharacteristics.Controller;
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, leftHandedControllers);
+            foreach (var device in leftHandedControllers)
+            {
+                Vector2 direction;
+                if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out direction))
+                {
+                    rootBone.transform.localRotation *= Quaternion.AngleAxis(direction.x * angleSpeed * Time.deltaTime, Vector3.up);
+                }
+            }
         }
     }
     IEnumerator IsReady()

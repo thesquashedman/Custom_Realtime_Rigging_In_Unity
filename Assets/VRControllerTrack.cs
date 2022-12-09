@@ -35,7 +35,7 @@ public class VRControllerTrack : MonoBehaviour
 
             armBone.localRotation = x;
             float distance = Mathf.Min(maxReach, (headset.position - this.transform.position).magnitude);
-            float degrees = (maxReach - distance) * 90/maxReach;
+            float degrees = (maxReach - distance) * 110/maxReach;
             x *= Quaternion.AngleAxis(degrees, x * -Vector3.up * direction);
             elbowBone.localRotation = Quaternion.AngleAxis(degrees, -Vector3.right) ;
             armBone.localRotation = x;
