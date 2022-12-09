@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectsWithinCollider: []
   boneNumber: 0
+  boneColliderWeight: 1
 --- !u!54 &7296463881497447405
 Rigidbody:
   m_ObjectHideFlags: 0

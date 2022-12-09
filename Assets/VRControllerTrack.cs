@@ -43,6 +43,12 @@ public class VRControllerTrack : MonoBehaviour
             //armBone.localRotation = 
             
             handBone.localRotation = Quaternion.Inverse(x) * this.transform.localRotation * Quaternion.AngleAxis(-90, Vector3.right) ;
+
+            if(Input.GetKey(KeyCode.C))
+            {
+                
+                //armBone.localScale += Vector3.one * Time.deltaTime;
+            }
         }
     }
     IEnumerator IsReady()
