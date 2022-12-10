@@ -16,6 +16,14 @@ public class MeshBoneLoader : MonoBehaviour
 
     [SerializeField] GameObject colliderObject;
 
+    // Drag SelectionBox Variables
+    private bool isDragSelect = false;
+
+    private Vector3 mousePositionIntial;
+    private Vector3 mousePositionEnd;
+
+    public RectTransform selectionBox;
+
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
     class GroupedVertices{
@@ -31,6 +39,8 @@ public class MeshBoneLoader : MonoBehaviour
     
     //Used for the grouping of the vertices, matches vertex Vector3 with which group they should be a part of.
     Dictionary<Vector3, GroupedVertices> mVertexDictioary = new Dictionary<Vector3, GroupedVertices>();
+
+    Dictionary<int, int> mVertexBoneSelection = new Dictionary<int, int>();
 
     const int numberOfBones = 21;
 
@@ -58,8 +68,12 @@ public class MeshBoneLoader : MonoBehaviour
                 GameObject newCollider = Instantiate(colliderObject);
 
                 newCollider.transform.localPosition = transform.localToWorldMatrix.MultiplyPoint3x4(mMesh.vertices[i]); //Currently only works with translations.
-                temp.collider = newCollider;
                 newCollider.transform.parent = transform;
+                // Add the VertexSelection class to each vertex collider gameobject
+                newCollider.AddComponent<VertexSelection>();
+                newCollider.GetComponent<VertexSelection>().vertexId = i;
+                newCollider.tag = "VertexCollider";
+                temp.collider = newCollider;
             }
             else{
                 mVertexDictioary[mMesh.vertices[i]].mVertexIndexes.Add(i);
@@ -87,6 +101,125 @@ public class MeshBoneLoader : MonoBehaviour
         //We also ideally want to assign all the vertices at once, going from a rigging mode where we assign points to the rig to a manipulating mode where we manipulate the rig.
     }
 
+    void CheckVertexSelection()
+    {
+        // If left mouse button is clicked
+        if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+        {
+            // Get the vertex that it clicked
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hits = Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), 100.0f); ;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                RaycastHit hit = hits[i];
+                // Get the first vertex that hit
+                if (hit.transform.tag == "VertexCollider")
+                {
+                    // Add the vertex id to bone id pair to a dictionary
+                    //Debug.Log("Clicked on vertex: " + hit.transform.name);
+                    VertexSelection v = hit.transform.GetComponent<VertexSelection>();
+                    //mGroupedVerticesList[v.vertexId].collider.GetComponent<Renderer>().material.color;
+                    Debug.Log("Vertex Hitted: " + v.vertexId + ", Assign to bone" + v.GetBoneId());
+                    Mesh mMesh = GetComponent<MeshFilter>().mesh;
+                    Color[] mColor = new Color[mMesh.vertices.Length];
+                    for (int j = 0; j < mGroupedVerticesList.Count; j++)
+                    {
+                        for (int k = 0;  k < mGroupedVerticesList[j].mVertexIndexes.Count; k++)
+                        {
+                            mColor[mGroupedVerticesList[j].mVertexIndexes[k]] = mGroupedVerticesList[j].group_and_weights;
+                            if (mGroupedVerticesList[j].mVertexIndexes[k] == v.vertexId)
+                            {
+                                mGroupedVerticesList[j].group_and_weights = new Color(v.GetBoneId(), 1.0f, 0, 0);
+                                mColor[mGroupedVerticesList[j].mVertexIndexes[k]] = new Color(v.GetBoneId(), 1.0f, 0, 0);
+                            }
+                        }
+                    }
+                    mMesh.colors = mColor;
+                    break;
+                }
+            }
+        }
+        
+        // SelectionBox
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+        {
+            mousePositionIntial = Input.mousePosition;
+            isDragSelect = false;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
+        {
+            if (!isDragSelect && (mousePositionIntial - Input.mousePosition).magnitude > 30)
+            {
+                isDragSelect = true;
+            }
+
+            if (isDragSelect)
+            {
+                mousePositionEnd = Input.mousePosition;
+                UpdateSelectionBox();
+            }
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0))
+        {
+            if (isDragSelect)
+            {
+                isDragSelect = false;
+                UpdateSelectionBox();
+                SelectObjects();
+            }
+        }
+    }
+
+    void UpdateSelectionBox()
+    {
+        selectionBox.gameObject.SetActive(isDragSelect);
+
+        float width = mousePositionEnd.x - mousePositionIntial.x;
+        float height = mousePositionEnd.y - mousePositionIntial.y;
+        Debug.Log(mousePositionIntial);
+        Debug.Log(mousePositionEnd);
+        Debug.Log(width);
+        Debug.Log(height);
+        selectionBox.sizeDelta = new Vector2(Mathf.Abs(width), Mathf.Abs(height));
+
+        selectionBox.anchoredPosition = new Vector2(mousePositionIntial.x, mousePositionIntial.y) + new Vector2(width / 2, height / 2);
+    }
+
+    void SelectObjects()
+    {
+        Vector2 minValue = selectionBox.anchoredPosition - (selectionBox.sizeDelta / 2);
+        Vector2 maxValue = selectionBox.anchoredPosition + (selectionBox.sizeDelta / 2);
+
+        GameObject[] selectableObjects = GameObject.FindGameObjectsWithTag("VertexCollider");
+        foreach(GameObject selectableObj in selectableObjects)
+        {
+            Vector3 objectScreenPos = Camera.main.WorldToScreenPoint(selectableObj.transform.position);
+
+            if (objectScreenPos.x > minValue.x && objectScreenPos.x < maxValue.x && objectScreenPos.y > minValue.y && objectScreenPos.y < maxValue.y)
+            {
+                VertexSelection v = selectableObj.transform.GetComponent<VertexSelection>();
+                //mGroupedVerticesList[v.vertexId].collider.GetComponent<Renderer>().material.color;
+                Debug.Log("Vertex Hitted: " + v.vertexId + ", Assign to bone" + v.GetBoneId());
+                Mesh mMesh = GetComponent<MeshFilter>().mesh;
+                Color[] mColor = new Color[mMesh.vertices.Length];
+                for (int j = 0; j < mGroupedVerticesList.Count; j++)
+                {
+                    for (int k = 0; k < mGroupedVerticesList[j].mVertexIndexes.Count; k++)
+                    {
+                        mColor[mGroupedVerticesList[j].mVertexIndexes[k]] = mGroupedVerticesList[j].group_and_weights;
+                        if (mGroupedVerticesList[j].mVertexIndexes[k] == v.vertexId)
+                        {
+                            mGroupedVerticesList[j].group_and_weights = new Color(v.GetBoneId(), 1.0f, 0, 0);
+                            mColor[mGroupedVerticesList[j].mVertexIndexes[k]] = new Color(v.GetBoneId(), 1.0f, 0, 0);
+                        }
+                    }
+                }
+                mMesh.colors = mColor;
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -123,6 +256,7 @@ public class MeshBoneLoader : MonoBehaviour
             mMaterial.SetMatrixArray("MyXformMat", matrixArray); //Loads the matrix for bone 1
             */
             mMaterial.SetMatrixArray("MyXformMat", boneMatrixArray);
+        CheckVertexSelection();
             
     }
     public void LoadBone(int boneNumber, Matrix4x4 boneMatrix)
@@ -137,7 +271,7 @@ public class MeshBoneLoader : MonoBehaviour
         
         Color[] mColors = new Color[mMesh.vertices.Length];
         GameObject[] boneColliders = GameObject.FindGameObjectsWithTag("BoneCollider");
-        Debug.Log(boneColliders.Length);
+        //Debug.Log(boneColliders.Length);
         for (int v = 0; v < mGroupedVerticesList.Count; v++)
         {
             foreach (GameObject b in boneColliders)
