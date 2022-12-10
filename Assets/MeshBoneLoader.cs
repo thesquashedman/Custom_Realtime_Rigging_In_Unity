@@ -25,6 +25,8 @@ public class MeshBoneLoader : MonoBehaviour
 
     [SerializeField]List<int> boneIgnore;
 
+    bool currentlyPressed;
+
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
     class GroupedVertices{
@@ -118,6 +120,30 @@ public class MeshBoneLoader : MonoBehaviour
         {
              GetComponent<Renderer>().material = originalMaterial;
              mMaterial = originalMaterial;
+        }
+        var leftHandedControllers = new List<UnityEngine.XR.InputDevice>();
+        var desiredCharacteristics = UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Left | UnityEngine.XR.InputDeviceCharacteristics.Controller;
+        UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, leftHandedControllers);
+        foreach (var device in leftHandedControllers)
+        {
+            bool toggle;
+            if(device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out toggle) && toggle)
+            {
+                
+                originalMaterial = mMaterial;
+                GetComponent<Renderer>().material.shader = Shader.Find("Unlit/BoneShaderColored");
+                mMaterial = GetComponent<Renderer>().material;
+                currentlyPressed = true;
+            }
+            else
+            {
+                if(currentlyPressed)
+                {
+                    GetComponent<Renderer>().material = originalMaterial;
+                    mMaterial = originalMaterial;
+                    currentlyPressed = false;
+                }
+            }
         }
            //Mesh mMesh = GetComponent<MeshFilter>().mesh;
             
