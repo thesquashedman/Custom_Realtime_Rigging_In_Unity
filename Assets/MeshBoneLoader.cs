@@ -16,6 +16,7 @@ public class MeshBoneLoader : MonoBehaviour
 
     [SerializeField] GameObject colliderObject;
 
+    [SerializeField] SaveSystem saveSystem;
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
     class GroupedVertices{
@@ -80,7 +81,7 @@ public class MeshBoneLoader : MonoBehaviour
             boneMatrixArray[i] = Matrix4x4.identity; //Set the initial values of all the bones to the identity matrix.
         }
         //AutoAssignBones();
-        StartCoroutine(AutoAssignBones());
+        //StartCoroutine(AutoAssignBones());
         
         //Important note: After assigning the vertices to bones, we will want to hide all the cube colliders that mark the points.
         //We also ideally want to assign all the vertices at once, going from a rigging mode where we assign points to the rig to a manipulating mode where we manipulate the rig.
@@ -136,7 +137,7 @@ public class MeshBoneLoader : MonoBehaviour
         
         Color[] mColors = new Color[mMesh.vertices.Length];
         GameObject[] boneColliders = GameObject.FindGameObjectsWithTag("BoneCollider");
-        Debug.Log(boneColliders.Length);
+        //Debug.Log(boneColliders.Length);
         for (int v = 0; v < mGroupedVerticesList.Count; v++)
         {
             foreach (GameObject b in boneColliders)
@@ -159,13 +160,16 @@ public class MeshBoneLoader : MonoBehaviour
                     //{
                     //Debug.Log("Got Inside 2");
                 int boneNumber = b.GetComponent<CheckInsideTheColider>().Check(mGroupedVerticesList[v].collider);
+                //Debug.Log(v);
                 if (boneNumber != 0)
                 {
                     //Debug.Log("INSIDE");
                     for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
                     {
                         mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = new Color(boneNumber, 1.0f, 0, 0);
+                        
                     }
+                    saveSystem.AddVertexToList(v, boneNumber, 1);
                 }
                 
 
@@ -173,8 +177,37 @@ public class MeshBoneLoader : MonoBehaviour
             }
                 
         }
-         mMesh.colors = mColors;
+        mMesh.colors = mColors;
+        saveSystem.WriteTOJSON();
 
     }
+
+
+    public void LoadFormJSONFile()
+    {
+        Debug.Log(this.GetComponent<MeshFilter>().mesh.vertices.Length);
+        Mesh mMesh = GetComponent<MeshFilter>().mesh;
+        Color[] mColors = new Color[mMesh.vertices.Length];
+        for (int v = 0; v < mGroupedVerticesList.Count; v++) //this.GetComponent<MeshFilter>().mesh.vertices.Length - 1
+        {
+
+            for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+            {
+                mColors[mGroupedVerticesList[v].mVertexIndexes[i]] = 
+                    new Color(saveSystem.getVertex(v).bouneIndex, (float)saveSystem.getVertex(v).waight, 0, 0);
+            }
+        }
+        mMesh.colors = mColors;
+    }
+
+    //public void conectVerWithBone(int vertexInd, int boneIndex, float weight)
+    //{
+    //    Mesh mMesh = GetComponent<MeshFilter>().mesh;
+    //    Color[] mColors = new Color[mMesh.vertices.Length];
+    //    for (int i = 0; i < mGroupedVerticesList[vertexInd].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+    //    {
+    //        mColors[mGroupedVerticesList[vertexInd].mVertexIndexes[i]] = new Color(boneIndex, weight, 0, 0);
+    //    }
+    //}
 }
     

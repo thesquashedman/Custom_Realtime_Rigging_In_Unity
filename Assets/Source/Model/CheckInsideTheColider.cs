@@ -30,7 +30,7 @@ public class CheckInsideTheColider : MonoBehaviour
 
     public int Check(GameObject collider)
     {
-        Debug.Log(ObjectsWithinCollider.Count);
+        //Debug.Log(ObjectsWithinCollider.Count);
         if(ObjectsWithinCollider.Contains(collider))
         {
             return boneNumber;
@@ -61,7 +61,7 @@ public class CheckInsideTheColider : MonoBehaviour
             //Debug.Log("moo");
             if(!ObjectsWithinCollider.Contains(other.gameObject))
             {
-                Debug.Log("added");
+                //Debug.Log("added");
                 ObjectsWithinCollider.Add(other.gameObject);
             }
         }

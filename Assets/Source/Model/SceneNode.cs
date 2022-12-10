@@ -77,8 +77,8 @@ public class SceneNode : MonoBehaviour {
         if(boneNumber == 1)
         {
             //Debug.Log(mCombinedParentXformFromOrigin.ToString());
-            Debug.Log(WorldPositionUponAssignment);
-            Debug.Log(T);
+            //Debug.Log(WorldPositionUponAssignment);
+            //Debug.Log(T);
         }
         
 
