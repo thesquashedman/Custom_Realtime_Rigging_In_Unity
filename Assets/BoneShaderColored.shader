@@ -37,7 +37,7 @@ Shader "Unlit/BoneShaderColored"
             };
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4x4 MyXformMat[22];
+            float4x4 MyXformMat[23];
 
             v2f vert (appdata v)
             {
@@ -55,7 +55,7 @@ Shader "Unlit/BoneShaderColored"
                 UNITY_TRANSFER_FOG(o,o.vertex);
 
                 //Hue shift gotten from comments on https://gist.github.com/mairod/a75e7b44f68110e1576d77419d608786
-                float hue = v.mColor.x * (2 * 3.1415 / 22);
+                float hue = v.mColor.x * (2 * 3.1415 / 23);
                 float3 newColor = float3(1, 0 , 0);
                 float3 k = float3(0.57735, 0.57735, 0.57735);
                 float cosAngle = cos(hue);

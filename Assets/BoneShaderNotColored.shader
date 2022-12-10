@@ -35,7 +35,7 @@ Shader "Unlit/BoneShaderNotColored"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4x4 MyXformMat[22];
+            float4x4 MyXformMat[23];
 
             v2f vert (appdata v)
             {

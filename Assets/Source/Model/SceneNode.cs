@@ -23,9 +23,11 @@ public class SceneNode : MonoBehaviour {
     bool firstCall = true;
     Vector3 WorldPositionUponAssignment;
 
+    MeshBoneLoader[] allMesh;
+
 	// Use this for initialization
 	protected void Start () {
-
+        allMesh = FindObjectsOfType<MeshBoneLoader>();
         InitializeSceneNode();
         // Debug.Log("PrimitiveList:" + PrimitiveList.Count);
 	}
@@ -36,6 +38,7 @@ public class SceneNode : MonoBehaviour {
 
     private void InitializeSceneNode()
     {
+        
         mCombinedParentXform = Matrix4x4.identity;
     }
 
@@ -74,9 +77,13 @@ public class SceneNode : MonoBehaviour {
         TD[14] = (transform.localPosition.z - oPosition.z);
 
         mCombinedParentXformFromOrigin = parentXFormFromOrigin * TD * T * R * S * T.inverse;
-        if(boneNumber == 1)
+        if(boneNumber == 20)
         {
             //Debug.Log(mCombinedParentXformFromOrigin.ToString());
+<<<<<<< HEAD
+=======
+            //Debug.Log(WorldPositionUponAssignment.ToString());
+>>>>>>> ed0079eea3be6943eed03b3caa9eb3e280c81eb6
             //Debug.Log(WorldPositionUponAssignment);
             //Debug.Log(T);
         }
@@ -105,8 +112,15 @@ public class SceneNode : MonoBehaviour {
         {
             p.LoadShaderMatrix(ref mCombinedParentXform, boneNumber);
         }
+        if(allMesh != null)
+        {
+            foreach (MeshBoneLoader mesh in allMesh)
+            {
+                mesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
+            }
+        }
         
-        myMesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
+        //myMesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
 
     }
     

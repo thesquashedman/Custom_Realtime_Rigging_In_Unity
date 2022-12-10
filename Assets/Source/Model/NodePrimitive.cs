@@ -22,7 +22,7 @@ public class NodePrimitive: MonoBehaviour {
         Matrix4x4 trs = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
         Matrix4x4 m = nodeMatrix * p * trs * invp;
 
-        float hue = boneNumber * (2 * 3.1415f / 22);
+        float hue = boneNumber * (2 * 3.1415f / 23);
         Vector3 newColor = new Vector3(1, 0 , 0);
         Vector3 k = new Vector3(0.57735f, 0.57735f, 0.57735f);
         float cosAngle = Mathf.Cos(hue);

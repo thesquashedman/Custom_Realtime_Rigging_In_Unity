@@ -6,6 +6,8 @@ public class CheckInsideTheColider : MonoBehaviour
 {
     public List<GameObject> ObjectsWithinCollider = new List<GameObject>();
     public int boneNumber = 0;
+
+    [SerializeField] float boneColliderWeight = 1;
     void Update()
     {
         //Collider[] hitColidliders = Physics.OverlapSphere(transform.position, 0f);
@@ -30,8 +32,8 @@ public class CheckInsideTheColider : MonoBehaviour
 
     public int Check(GameObject collider, ref float distanceOverHeight)
     {
-        Debug.Log(ObjectsWithinCollider.Count);
-        distanceOverHeight = (collider.transform.position - this.transform.position).magnitude / 2;
+        //Debug.Log(ObjectsWithinCollider.Count);
+        distanceOverHeight = ((collider.transform.position - this.transform.position).magnitude / 2)/boneColliderWeight;
         if(ObjectsWithinCollider.Contains(collider))
         {
             return boneNumber;
@@ -45,6 +47,16 @@ public class CheckInsideTheColider : MonoBehaviour
         }
         return false;
         */
+    }
+    public int CheckNoCollider(Vector3 position, ref float distanceOverHeight)
+    {
+        
+        distanceOverHeight = ((position - this.transform.position).magnitude / 2) / boneColliderWeight;
+        if(GetComponent<Collider>().bounds.Contains(position))
+        {
+            return boneNumber;
+        }
+        return 0;
     }
 
     public bool IsInside(Vector3 point)
@@ -62,7 +74,7 @@ public class CheckInsideTheColider : MonoBehaviour
             //Debug.Log("moo");
             if(!ObjectsWithinCollider.Contains(other.gameObject))
             {
-                Debug.Log("added");
+                //Debug.Log("added");
                 ObjectsWithinCollider.Add(other.gameObject);
             }
         }
@@ -73,7 +85,7 @@ public class CheckInsideTheColider : MonoBehaviour
         {
             if(ObjectsWithinCollider.Contains(other.gameObject))
             {
-                Debug.Log("removing");
+                //Debug.Log("removing");
                 ObjectsWithinCollider.Remove(other.gameObject);
             }
         }
