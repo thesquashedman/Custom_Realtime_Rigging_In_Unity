@@ -107,6 +107,7 @@ public class SceneNode : MonoBehaviour {
         }
         foreach (NodePrimitive p in specialPrimitive)
         {
+            
             p.LoadShaderMatrix(ref mCombinedParentXform, boneNumber);
         }
         if(allMesh != null)

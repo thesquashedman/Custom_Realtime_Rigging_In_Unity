@@ -15,6 +15,8 @@ public class VRHeadsetTrack : MonoBehaviour
     float angleSpeed = 120;
 
     bool bigHead = false;
+
+    bool currentlyPressed = false;
     void Start()
     {
         StartCoroutine(IsReady());
@@ -43,14 +45,25 @@ public class VRHeadsetTrack : MonoBehaviour
                 bool toggle;
                 if(device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out toggle) && toggle)
                 {
-                    if(!bigHead)
+                    if(!currentlyPressed)
                     {
-                        headBone.localScale = new Vector3(3, 3, 3);
+                        if(!bigHead)
+                        {
+                            headBone.localScale = new Vector3(3, 3, 3);
+                            bigHead = true;
+                        }
+                        else
+                        {
+                            headBone.localScale = Vector3.one;
+                            bigHead = false;
+                        }
                     }
-                    else
-                    {
-                        headBone.localScale = Vector3.one;
-                    }
+                    currentlyPressed = true;
+                    
+                }
+                else
+                {
+                    currentlyPressed = false;
                 }
             }
             var leftHandedControllers = new List<UnityEngine.XR.InputDevice>();

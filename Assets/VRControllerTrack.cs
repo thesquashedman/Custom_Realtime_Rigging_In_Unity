@@ -16,7 +16,9 @@ public class VRControllerTrack : MonoBehaviour
 
     float maxReach = 6;
 
+    bool bigArm= false;
 
+    bool currentlyPressed = false;
     bool ready = false;
     void Start()
     {
@@ -31,10 +33,10 @@ public class VRControllerTrack : MonoBehaviour
         if(ready) 
         {
             
-            Quaternion x = Quaternion.FromToRotation(-headset.parent.right * direction, (headset.position - this.transform.position).normalized) * Quaternion.AngleAxis(direction * 80, Vector3.forward);
+            Quaternion x = Quaternion.FromToRotation(-Vector3.right * direction, (headset.localPosition - this.transform.localPosition).normalized) * Quaternion.AngleAxis(direction * 80, Vector3.forward);
 
             armBone.localRotation = x;
-            float distance = Mathf.Min(maxReach, (headset.position - this.transform.position).magnitude);
+            float distance = Mathf.Min(maxReach, (headset.localPosition - this.transform.localPosition).magnitude);
             float degrees = (maxReach - distance) * 110/maxReach;
             x *= Quaternion.AngleAxis(degrees, x * -Vector3.up * direction);
             elbowBone.localRotation = Quaternion.AngleAxis(degrees, -Vector3.right) ;
@@ -44,10 +46,34 @@ public class VRControllerTrack : MonoBehaviour
             
             handBone.localRotation = Quaternion.Inverse(x) * this.transform.localRotation * Quaternion.AngleAxis(-90, Vector3.right) ;
 
-            if(Input.GetKey(KeyCode.C))
+            var leftHandedControllers = new List<UnityEngine.XR.InputDevice>();
+            var desiredCharacteristics = UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Left | UnityEngine.XR.InputDeviceCharacteristics.Controller;
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, leftHandedControllers);
+            foreach (var device in leftHandedControllers)
             {
-                
-                //armBone.localScale += Vector3.one * Time.deltaTime;
+                bool toggle;
+                if(device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out toggle) && toggle)
+                {
+                    if(!currentlyPressed)
+                    {
+                        if(!bigArm)
+                        {
+                            handBone.localPosition = Vector3.down * 5;
+                            bigArm = true;
+                        }
+                        else
+                        {
+                            handBone.localPosition = Vector3.zero;
+                            bigArm = false;
+                        }
+                    }
+                    currentlyPressed = true;
+                   
+                }
+                else
+                {
+                    currentlyPressed = false;
+                }
             }
         }
     }
