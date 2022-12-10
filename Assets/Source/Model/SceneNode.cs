@@ -80,10 +80,6 @@ public class SceneNode : MonoBehaviour {
         if(boneNumber == 20)
         {
             //Debug.Log(mCombinedParentXformFromOrigin.ToString());
-<<<<<<< HEAD
-=======
-            //Debug.Log(WorldPositionUponAssignment.ToString());
->>>>>>> ed0079eea3be6943eed03b3caa9eb3e280c81eb6
             //Debug.Log(WorldPositionUponAssignment);
             //Debug.Log(T);
         }
