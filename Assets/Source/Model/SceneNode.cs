@@ -23,9 +23,11 @@ public class SceneNode : MonoBehaviour {
     bool firstCall = true;
     Vector3 WorldPositionUponAssignment;
 
+    MeshBoneLoader[] allMesh;
+
 	// Use this for initialization
 	protected void Start () {
-
+        allMesh = FindObjectsOfType<MeshBoneLoader>();
         InitializeSceneNode();
         // Debug.Log("PrimitiveList:" + PrimitiveList.Count);
 	}
@@ -36,11 +38,12 @@ public class SceneNode : MonoBehaviour {
 
     private void InitializeSceneNode()
     {
+        
         mCombinedParentXform = Matrix4x4.identity;
     }
 
     // This must be called _BEFORE_ each draw!! 
-    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin)
+    public void CompositeXform(ref Matrix4x4 parentXform, ref Matrix4x4 parentXFormFromOrigin, int previousBone)
     {
         Matrix4x4 orgT = Matrix4x4.Translate(NodeOrigin);
         Matrix4x4 trs = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
@@ -74,7 +77,7 @@ public class SceneNode : MonoBehaviour {
         TD[14] = (transform.localPosition.z - oPosition.z);
 
         mCombinedParentXformFromOrigin = parentXFormFromOrigin * TD * T * R * S * T.inverse;
-        if(boneNumber == 1)
+        if(boneNumber == 20)
         {
             //Debug.Log(mCombinedParentXformFromOrigin.ToString());
             //Debug.Log(WorldPositionUponAssignment);
@@ -88,7 +91,7 @@ public class SceneNode : MonoBehaviour {
             SceneNode cn = child.GetComponent<SceneNode>();
             if (cn != null)
             {
-                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin);
+                cn.CompositeXform(ref mCombinedParentXform, ref mCombinedParentXformFromOrigin, boneNumber);
             }
         }
         
@@ -99,14 +102,21 @@ public class SceneNode : MonoBehaviour {
         }
         foreach (NodePrimitiveLine p in LinePrimitiveList)
         {
-            p.LoadShaderMatrix(ref parentXform, ref mCombinedParentXform, boneNumber);
+            p.LoadShaderMatrix(ref parentXform, ref mCombinedParentXform, previousBone);
         }
         foreach (NodePrimitive p in specialPrimitive)
         {
             p.LoadShaderMatrix(ref mCombinedParentXform, boneNumber);
         }
+        if(allMesh != null)
+        {
+            foreach (MeshBoneLoader mesh in allMesh)
+            {
+                mesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
+            }
+        }
         
-        myMesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
+        //myMesh.LoadBone(boneNumber, mCombinedParentXformFromOrigin);
 
     }
     

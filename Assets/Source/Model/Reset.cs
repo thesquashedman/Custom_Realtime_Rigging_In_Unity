@@ -32,5 +32,8 @@ public class Reset : MonoBehaviour
         Center.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         Center.localRotation = Quaternion.identity;
         Camera.localPosition = new Vector3(0, 0, -16);
+
+        // Reset VertexSelections
+
     }
 }

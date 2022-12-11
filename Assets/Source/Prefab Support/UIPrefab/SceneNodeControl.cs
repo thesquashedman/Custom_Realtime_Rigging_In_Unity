@@ -15,7 +15,10 @@ public class SceneNodeControl : MonoBehaviour {
 
     int previousIndex = 0;
 
-
+    public SceneNode GetSelectedSceneNode()
+    {
+        return mSelectedTransform[previousIndex].GetComponent<SceneNode>();
+    }
 
     // Use this for initialization
     void Start () {
