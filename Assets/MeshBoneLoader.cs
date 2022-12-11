@@ -24,13 +24,15 @@ public class MeshBoneLoader : MonoBehaviour
     private Vector3 mousePositionEnd;
 
     public RectTransform selectionBox;
-    [SerializeField]bool useColliders;
+    [SerializeField] bool useColliders;
 
     Mesh mMesh;
 
     Material originalMaterial;
 
-    [SerializeField]List<int> boneIgnore;
+    [SerializeField] List<int> boneIgnore;
+
+    [SerializeField] SaveSystem saveSystem;
 
 
     //Grouped vertices holds all the indexes of all the mesh vertices that are in the same position, holds what vertex group they are a part of and their weight in a Color, and holds a Gameobject with a collider which will be used for accessing
@@ -361,5 +363,70 @@ public class MeshBoneLoader : MonoBehaviour
          mMesh.colors = mColors;
 
     }
+
+
+
+    public void LoadFormJSONFile()
+    {
+        //Debug.Log(this.GetComponent<MeshFilter>().mesh.vertices.Length);
+        Mesh mMesh = GetComponent<MeshFilter>().mesh;
+        Color[] mColors = new Color[mMesh.vertices.Length];
+        //for (int v = 0; v < mGroupedVerticesList.Count; v++) //this.GetComponent<MeshFilter>().mesh.vertices.Length - 1
+        //{
+
+        //    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+        //    {
+        //        mColors[mGroupedVerticesList[v].mVertexIndexes[i]] =
+        //            new Color(saveSystem.getVertex(v).bouneIndex, (float)saveSystem.getVertex(v).waight, 0, 0);
+        //    }
+        //}
+        
+        
+        for (int i = 0; i < mColors.Length; i++) {
+            
+            mColors[i] = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
+            mGroupedVerticesList[saveSystem.getVertex(i).groupedVertexNumber].group_and_weights = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
+        }
+        mMesh.colors = mColors;
+    }
+
+    //public void conectVerWithBone(int vertexInd, int boneIndex, float weight)
+    //{
+    //    Mesh mMesh = GetComponent<MeshFilter>().mesh;
+    //    Color[] mColors = new Color[mMesh.vertices.Length];
+    //    for (int i = 0; i < mGroupedVerticesList[vertexInd].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+    //    {
+    //        mColors[mGroupedVerticesList[vertexInd].mVertexIndexes[i]] = new Color(boneIndex, weight, 0, 0);
+    //    }
+    //}
+
+    public void SaveConections()
+    {
+        Mesh mMesh = GetComponent<MeshFilter>().mesh;
+        Color[] mColors = mMesh.colors;
+        //for (int v = 0; v < mGroupedVerticesList.Count; v++) //this.GetComponent<MeshFilter>().mesh.vertices.Length - 1
+        //{
+
+        //    for (int i = 0; i < mGroupedVerticesList[v].mVertexIndexes.Count; i++) //mGroupedVerticesList[0].mVertexIndexes.Count
+        //    {
+        //        //mColors[mGroupedVerticesList[v].mVertexIndexes[i]] =
+        //        //    new Color(saveSystem.getVertex(v).bouneIndex, (float)saveSystem.getVertex(v).waight, 0, 0);
+        //        saveSystem.AddVertexToList(mGroupedVerticesList[v].mVertexIndexes[i], (int)mGroupedVerticesList[v].group_and_weights.r, 1);
+
+        //    }
+        //}
+
+        for(int i = 0; i < mGroupedVerticesList.Count; i++)
+        {
+            foreach(int vIndex in mGroupedVerticesList[i].mVertexIndexes)
+            {
+                saveSystem.AddVertexToList(vIndex, (int)mGroupedVerticesList[i].group_and_weights.r, (int)mGroupedVerticesList[i].group_and_weights.g, i);
+            }
+        }
+        
+        saveSystem.WriteTOJSON();
+        //mMesh.colors = mColors;
+    }
+
 }
-    
+
