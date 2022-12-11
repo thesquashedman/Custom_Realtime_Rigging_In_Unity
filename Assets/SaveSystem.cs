@@ -16,6 +16,8 @@ public class SaveSystem : MonoBehaviour
 
 
     //public int[] arr = new int[10];
+    string path = "";
+    string persistantPath = "";
 
     [System.Serializable]
     public class Vertex
@@ -23,6 +25,8 @@ public class SaveSystem : MonoBehaviour
         public int vertIndex = 0;
         public int bouneIndex = 0;
         public int waight = 0;
+
+        public int groupedVertexNumber = 0;
 
         
     }
@@ -35,13 +39,18 @@ public class SaveSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        SetPaths();
         vertexList = new Vertex[FindObjectOfType<MeshBoneLoader>().GetComponent<MeshFilter>().mesh.vertices.Length];
         for(int i = 0; i< vertexList.Length; i++)
         {
             vertexList[i] = new Vertex();
         }
         Debug.Log(vertexList.Length);
+    }
+    void SetPaths()
+    {
+        path = Application.dataPath + Path.AltDirectorySeparatorChar + "SaveData.json";
+        persistantPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "SaveData.json";
     }
 
     // Update is called once per frame
@@ -55,7 +64,7 @@ public class SaveSystem : MonoBehaviour
         
         string strOutput = JsonHelper.ToJson(vertexList);
         Debug.Log(strOutput);
-        File.WriteAllText(Application.dataPath + "/JSON.txt", strOutput);
+        File.WriteAllText(persistantPath, strOutput);
     }
 
     public void ClearSaves()
@@ -68,7 +77,7 @@ public class SaveSystem : MonoBehaviour
 
     }
 
-    public void AddVertexToList(int vertexInd, int boneInd, int weight)
+    public void AddVertexToList(int vertexInd, int boneInd, int weight, int groupedIndex)
     {
         //Debug.Log(vertexList.countList);
         //vertexList.list[0] = new Vertex();
@@ -78,6 +87,7 @@ public class SaveSystem : MonoBehaviour
         vertexList[vertexInd].vertIndex = vertexInd;
         vertexList[vertexInd].bouneIndex = boneInd;
         vertexList[vertexInd].waight = weight;
+        vertexList[vertexInd].groupedVertexNumber = groupedIndex;
 
 
         //int cunt2 = vertexList.count;
@@ -93,8 +103,9 @@ public class SaveSystem : MonoBehaviour
 
     public void LoadFormJSON()
     {
-        
-        vertexList = JsonHelper.FromJson<Vertex>(JSON.text);
+        using StreamReader reader = new StreamReader(persistantPath);
+        string json = reader.ReadToEnd();
+        vertexList = JsonHelper.FromJson<Vertex>(json);
         Debug.Log(vertexList.Length);
         for(int i = 0; i < vertexList.Length; i++)
         {

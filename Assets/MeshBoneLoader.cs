@@ -381,9 +381,11 @@ public class MeshBoneLoader : MonoBehaviour
         //    }
         //}
         
-
+        
         for (int i = 0; i < mColors.Length; i++) {
+            
             mColors[i] = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
+            mGroupedVerticesList[saveSystem.getVertex(i).groupedVertexNumber].group_and_weights = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
         }
         mMesh.colors = mColors;
     }
@@ -414,11 +416,14 @@ public class MeshBoneLoader : MonoBehaviour
         //    }
         //}
 
-        for (int i = 0; i < mColors.Length; i++)
+        for(int i = 0; i < mGroupedVerticesList.Count; i++)
         {
-            //Debug.Log((int)mColors[i].r);
-            saveSystem.AddVertexToList(i, (int)mColors[i].r, 1);
+            foreach(int vIndex in mGroupedVerticesList[i].mVertexIndexes)
+            {
+                saveSystem.AddVertexToList(vIndex, (int)mGroupedVerticesList[i].group_and_weights.r, (int)mGroupedVerticesList[i].group_and_weights.g, i);
+            }
         }
+        
         saveSystem.WriteTOJSON();
         //mMesh.colors = mColors;
     }
