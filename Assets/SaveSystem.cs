@@ -11,7 +11,8 @@ public class SaveSystem : MonoBehaviour
 
     public MeshBoneLoader meshBoneLoader;
 
-    public int listSize = 0;
+
+    //public int listSize = 0;
 
 
     //public int[] arr = new int[10];
@@ -19,65 +20,28 @@ public class SaveSystem : MonoBehaviour
     [System.Serializable]
     public class Vertex
     {
-        public int vertIndex;
-        public int bouneIndex;
-        public int waight;
+        public int vertIndex = 0;
+        public int bouneIndex = 0;
+        public int waight = 0;
 
-        public Vertex()
-        {
-            vertIndex = 0;
-            bouneIndex = 0;
-            waight = 0;
-        }
+        
     }
 
-    [System.Serializable]
-    public class VertexList 
-    {
-        public int countList = 0;
-        //public Vertex[] list;
-        public Vertex[] list;
+    Vertex[] vertexList;
 
-        public int size = 30;//FindObjectOfType<MeshBoneLoader>().
-            //GetComponent<MeshFilter>().mesh.vertices.Length;
-
-        public VertexList()
-        {
-            list = new Vertex[size];
-            for (int i = 0; i < size; i++)
-            {
-                //Vertex newV = new Vertex();
-                //newV.vertIndex = i;
-
-                list[i] = new Vertex();
-                list[i].vertIndex = i;
-                //Debug.Log(list[i].vertIndex);
-                countList++;
-            }
-        }
-
-    }
-
-    VertexList vertexList = new VertexList();
+    //VertexList vertexList = new VertexList();
 
 
     // Start is called before the first frame update
     void Start()
     {
-        vertexList.list = new Vertex[FindObjectOfType<MeshBoneLoader>().
-            GetComponent<MeshFilter>().mesh.vertices.Length];
-        for (int i = 0; i < vertexList.list.Length; i++)
+
+        vertexList = new Vertex[FindObjectOfType<MeshBoneLoader>().GetComponent<MeshFilter>().mesh.vertices.Length];
+        for(int i = 0; i< vertexList.Length; i++)
         {
-            //Vertex newV = new Vertex();
-            //newV.vertIndex = i;
-
-            vertexList.list[i] = new Vertex();
-            vertexList.list[i].vertIndex = i;
-            //Debug.Log(list[i].vertIndex);
+            vertexList[i] = new Vertex();
         }
-
-        listSize = FindObjectOfType<MeshBoneLoader>().
-            GetComponent<MeshFilter>().mesh.vertices.Length;
+        Debug.Log(vertexList.Length);
     }
 
     // Update is called once per frame
@@ -88,8 +52,9 @@ public class SaveSystem : MonoBehaviour
 
     public void WriteTOJSON()
     {
-        string strOutput = JsonUtility.ToJson(vertexList);
-
+        
+        string strOutput = JsonHelper.ToJson(vertexList);
+        Debug.Log(strOutput);
         File.WriteAllText(Application.dataPath + "/JSON.txt", strOutput);
     }
 
@@ -99,7 +64,7 @@ public class SaveSystem : MonoBehaviour
 
         File.WriteAllText(Application.dataPath + "/JSON.txt", strOutput);
 
-        Array.Clear(vertexList.list, 0, vertexList.list.Length);
+        Array.Clear(vertexList, 0, vertexList.Length);
 
     }
 
@@ -108,22 +73,11 @@ public class SaveSystem : MonoBehaviour
         //Debug.Log(vertexList.countList);
         //vertexList.list[0] = new Vertex();
         //Vertex newVert = new Vertex();
-        if(vertexList.list == null)
-        {
-            Debug.Log("NULL");
-        }
-        if (vertexList == null)
-        {
-            Debug.Log("NULL 2");
-        }
-        //Debug.Log(vertexInd);
-        //Debug.Log(boneInd);
-        //Debug.Log(weight);
+        
 
-
-        vertexList.list[vertexInd].vertIndex = vertexInd;
-        vertexList.list[vertexInd].bouneIndex = boneInd;
-        vertexList.list[vertexInd].waight = weight;
+        vertexList[vertexInd].vertIndex = vertexInd;
+        vertexList[vertexInd].bouneIndex = boneInd;
+        vertexList[vertexInd].waight = weight;
 
 
         //int cunt2 = vertexList.count;
@@ -139,18 +93,50 @@ public class SaveSystem : MonoBehaviour
 
     public void LoadFormJSON()
     {
-        vertexList = JsonUtility.FromJson<VertexList>(JSON.text);
+        
+        vertexList = JsonHelper.FromJson<Vertex>(JSON.text);
+        Debug.Log(vertexList.Length);
+        for(int i = 0; i < vertexList.Length; i++)
+        {
+            Debug.Log(vertexList[i].vertIndex);
+            
+        }
 
         meshBoneLoader.LoadFormJSONFile();
     }
 
     public Vertex getVertex(int vertInd)
     {
-        if (vertInd != vertexList.list[vertInd].vertIndex)
-        {
-            return null;
-        }
+        
 
-        return vertexList.list[vertInd];
+        return vertexList[vertInd];
     }
+    public static class JsonHelper
+{
+    public static T[] FromJson<T>(string json)
+    {
+        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
+        return wrapper.Items;
+    }
+
+    public static string ToJson<T>(T[] array)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.Items = array;
+        return JsonUtility.ToJson(wrapper);
+    }
+
+    public static string ToJson<T>(T[] array, bool prettyPrint)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        wrapper.Items = array;
+        return JsonUtility.ToJson(wrapper, prettyPrint);
+    }
+
+    [Serializable]
+    private class Wrapper<T>
+    {
+        public T[] Items;
+    }
+}
 }

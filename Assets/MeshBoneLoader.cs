@@ -382,8 +382,8 @@ public class MeshBoneLoader : MonoBehaviour
         //}
         
 
-        for (int i = 0; i < saveSystem.listSize; i++) {
-            mColors[saveSystem.getVertex(i).vertIndex] = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
+        for (int i = 0; i < mColors.Length; i++) {
+            mColors[i] = new Color(saveSystem.getVertex(i).bouneIndex, saveSystem.getVertex(i).waight, 0, 0);
         }
         mMesh.colors = mColors;
     }
@@ -416,7 +416,7 @@ public class MeshBoneLoader : MonoBehaviour
 
         for (int i = 0; i < mColors.Length; i++)
         {
-            Debug.Log((int)mColors[i].r);
+            //Debug.Log((int)mColors[i].r);
             saveSystem.AddVertexToList(i, (int)mColors[i].r, 1);
         }
         saveSystem.WriteTOJSON();
