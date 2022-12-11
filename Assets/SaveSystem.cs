@@ -11,6 +11,9 @@ public class SaveSystem : MonoBehaviour
 
     public MeshBoneLoader meshBoneLoader;
 
+    public int listSize = 0;
+
+
     //public int[] arr = new int[10];
 
     [System.Serializable]
@@ -35,7 +38,8 @@ public class SaveSystem : MonoBehaviour
         //public Vertex[] list;
         public Vertex[] list;
 
-        public int size = 30;
+        public int size = 30;//FindObjectOfType<MeshBoneLoader>().
+            //GetComponent<MeshFilter>().mesh.vertices.Length;
 
         public VertexList()
         {
@@ -60,12 +64,20 @@ public class SaveSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        vertexList.list = new Vertex[FindObjectOfType<MeshBoneLoader>().
+            GetComponent<MeshFilter>().mesh.vertices.Length];
+        for (int i = 0; i < vertexList.list.Length; i++)
+        {
+            //Vertex newV = new Vertex();
+            //newV.vertIndex = i;
 
-        //vertexList.list[0] = new Vertex();
+            vertexList.list[i] = new Vertex();
+            vertexList.list[i].vertIndex = i;
+            //Debug.Log(list[i].vertIndex);
+        }
 
-        //arr[0] = 1;
-
-        //AddVertexToList(1, 1, 1);
+        listSize = FindObjectOfType<MeshBoneLoader>().
+            GetComponent<MeshFilter>().mesh.vertices.Length;
     }
 
     // Update is called once per frame
@@ -96,6 +108,19 @@ public class SaveSystem : MonoBehaviour
         //Debug.Log(vertexList.countList);
         //vertexList.list[0] = new Vertex();
         //Vertex newVert = new Vertex();
+        if(vertexList.list == null)
+        {
+            Debug.Log("NULL");
+        }
+        if (vertexList == null)
+        {
+            Debug.Log("NULL 2");
+        }
+        //Debug.Log(vertexInd);
+        //Debug.Log(boneInd);
+        //Debug.Log(weight);
+
+
         vertexList.list[vertexInd].vertIndex = vertexInd;
         vertexList.list[vertexInd].bouneIndex = boneInd;
         vertexList.list[vertexInd].waight = weight;
@@ -121,6 +146,11 @@ public class SaveSystem : MonoBehaviour
 
     public Vertex getVertex(int vertInd)
     {
+        if (vertInd != vertexList.list[vertInd].vertIndex)
+        {
+            return null;
+        }
+
         return vertexList.list[vertInd];
     }
 }
