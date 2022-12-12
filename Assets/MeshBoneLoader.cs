@@ -26,6 +26,8 @@ public class MeshBoneLoader : MonoBehaviour
     [SerializeField]List<int> boneIgnore;
 
     bool currentlyPressed;
+
+    public Material tempMaterialHolder;
     
 
 
@@ -113,7 +115,7 @@ public class MeshBoneLoader : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.X))
         {
             originalMaterial = mMaterial;
-            GetComponent<Renderer>().material.shader = Shader.Find("Unlit/BoneShaderColored");
+            GetComponent<Renderer>().material = new Material(tempMaterialHolder);
             mMaterial = GetComponent<Renderer>().material;
             
         }
